@@ -4,7 +4,7 @@ import Header from "./components/Header";
 import KanbanBoard from "./components/KanbanBoard";
 
 function App() {
-    const [tickets, setTickets] = useState([]);
+    const [ticketData, setTicketData] = useState([]);
     const [liveMode, setLiveMode] = useState(false);
 
     useEffect(() => {
@@ -16,7 +16,7 @@ function App() {
                     dynamicTyping: true,
                     skipEmptyLines: true,
                     complete: (results) => {
-                        setTickets(results.data);
+                        setTicketData(results.data);
                     },
                 });
             })
@@ -29,10 +29,20 @@ function App() {
         setLiveMode((prev) => !prev);
     };
 
-    const ticketCounts = tickets.reduce((acc, ticket) => {
+    const ticketCounts = ticketData.reduce((acc, ticket) => {
         acc[ticket.status] = (acc[ticket.status] || 0) + 1;
         return acc;
     }, {});
+
+    const updateTicketStatus = (ticketId, newStatus) => {
+        setTicketData((prevTickets) =>
+            prevTickets.map((ticket) =>
+                ticket.ticketId === ticketId
+                    ? { ...ticket, status: newStatus }
+                    : ticket
+            )
+        );
+    };
 
     return (
         <div>
@@ -41,7 +51,10 @@ function App() {
                 handleLiveModeToggle={handleLiveModeToggle}
                 ticketCounts={ticketCounts}
             />
-            <KanbanBoard tickets={tickets} />
+            <KanbanBoard
+                tickets={ticketData}
+                updateTicketStatus={updateTicketStatus}
+            />
         </div>
     );
 }

@@ -8,7 +8,7 @@ statuses = ["To Do", "In Progress", "Blocked", "Done"]
 
 with open("tickets.csv", mode="w", newline="") as file:
     writer = csv.writer(file)
-    writer.writerow(["Ticket ID", "Title", "Description", "Status"])
+    writer.writerow(["ticketId", "title", "description", "status"])
 
     for i in range(1, num_tickets + 1):
         ticket_id = f"TICKET-{i:05d}"

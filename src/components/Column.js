@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Box, Typography } from "@mui/material";
-import { FixedSizeList as List } from "react-window";
+import { VariableSizeList as List } from "react-window";
 import TicketCard from "./TicketCard";
 
-function Column({ status, tickets }) {
+function Column({ status, tickets, updateTicketStatus }) {
+    const listRef = useRef();
+    const itemSizeMap = useRef({});
+
+    const getItemSize = (index) => {
+        return itemSizeMap.current[index] || 150; // default height
+    };
+
+    const setItemSize = (index, size) => {
+        itemSizeMap.current = { ...itemSizeMap.current, [index]: size };
+        listRef.current.resetAfterIndex(index);
+    };
+
     const Row = ({ index, style }) => (
-        <div style={style}>
-            <TicketCard ticket={tickets[index]} />
+        <div style={{ ...style, padding: "8px" }}>
+            <TicketCard
+                ticket={tickets[index]}
+                setItemSize={(size) => setItemSize(index, size)}
+                updateTicketStatus={updateTicketStatus}
+            />
         </div>
     );
 
@@ -25,8 +41,9 @@ function Column({ status, tickets }) {
                 <List
                     height={600}
                     itemCount={tickets.length}
-                    itemSize={120}
+                    itemSize={getItemSize}
                     width="100%"
+                    ref={listRef}
                 >
                     {Row}
                 </List>

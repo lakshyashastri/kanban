@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@mui/material";
 import Column from "./Column";
 
-function KanbanBoard({ tickets }) {
+function KanbanBoard({ tickets, updateTicketStatus }) {
     const statuses = ["To Do", "In Progress", "Blocked", "Done"];
 
     const ticketsByStatus = statuses.reduce((acc, status) => {
@@ -17,6 +17,7 @@ function KanbanBoard({ tickets }) {
                     key={status}
                     status={status}
                     tickets={ticketsByStatus[status]}
+                    updateTicketStatus={updateTicketStatus}
                 />
             ))}
         </Box>
