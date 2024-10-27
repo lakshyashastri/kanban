@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
 import Header from "./components/Header";
 import KanbanBoard from "./components/KanbanBoard";
+import useFakeTicketTransition from "./hooks/useFakeTicketTransition";
 
 function App() {
     const [ticketData, setTicketData] = useState([]);
@@ -43,6 +44,8 @@ function App() {
             )
         );
     };
+
+    useFakeTicketTransition(ticketData, updateTicketStatus, liveMode);
 
     return (
         <div>

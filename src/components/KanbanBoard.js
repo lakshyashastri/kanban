@@ -11,7 +11,12 @@ function KanbanBoard({ tickets, updateTicketStatus }) {
     }, {});
 
     return (
-        <Box display="flex" padding={2} overflow="auto">
+        <Box
+            display="flex"
+            padding={2}
+            height={`calc(100vh - 64px)`}
+            overflow="hidden"
+        >
             {statuses.map((status) => (
                 <Column
                     key={status}
