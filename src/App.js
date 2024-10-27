@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import Papa from "papaparse";
+import Header from "./components/Header";
+import KanbanBoard from "./components/KanbanBoard";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [tickets, setTickets] = useState([]);
+    const [liveMode, setLiveMode] = useState(false);
+
+    useEffect(() => {
+        fetch("/tickets.csv")
+            .then((response) => response.text())
+            .then((csvData) => {
+                Papa.parse(csvData, {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                    complete: (results) => {
+                        setTickets(results.data);
+                    },
+                });
+            })
+            .catch((error) => {
+                console.error("Error fetching or parsing CSV file:", error);
+            });
+    }, []);
+
+    const handleLiveModeToggle = () => {
+        setLiveMode((prev) => !prev);
+    };
+
+    const ticketCounts = tickets.reduce((acc, ticket) => {
+        acc[ticket.status] = (acc[ticket.status] || 0) + 1;
+        return acc;
+    }, {});
+
+    return (
+        <div>
+            <Header
+                liveMode={liveMode}
+                handleLiveModeToggle={handleLiveModeToggle}
+                ticketCounts={ticketCounts}
+            />
+            <KanbanBoard tickets={tickets} />
+        </div>
+    );
 }
 
 export default App;
