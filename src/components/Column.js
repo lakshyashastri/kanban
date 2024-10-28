@@ -110,6 +110,10 @@ function Column({
     }, [hasMore, loadMoreTickets, status]);
 
     useEffect(() => {
+        if (isMobile) {
+            setListHeight(null); // skip height calculation on mobile
+            return;
+        }
         function updateHeight() {
             if (containerRef.current) {
                 // calculate the available height for the list
@@ -123,7 +127,7 @@ function Column({
         updateHeight(); // set initial height
         window.addEventListener("resize", updateHeight); // update on resize
         return () => window.removeEventListener("resize", updateHeight);
-    }, []);
+    }, [isMobile]);
 
     return (
         <Box
@@ -185,37 +189,48 @@ function Column({
                 </IconButton>
             </Box>
             <Box flexGrow={1}>
-                {listHeight > 0 && (
-                    <InfiniteLoader
-                        isItemLoaded={isItemLoaded}
-                        itemCount={
-                            hasMore ? tickets.length + 1 : tickets.length
-                        }
-                        loadMoreItems={loadMoreItemsCallback}
-                    >
-                        {({ onItemsRendered, ref }) => (
-                            <List
-                                height={listHeight}
-                                itemCount={
-                                    hasMore
-                                        ? tickets.length + 1
-                                        : tickets.length
-                                }
-                                itemSize={getItemSize}
-                                width="100%"
-                                ref={(list) => {
-                                    listRef.current = list; // keep ref to list
-                                    ref(list); // pass to InfiniteLoader
-                                }}
-                                itemData={tickets}
-                                onItemsRendered={onItemsRendered}
-                                style={{ overflowX: "hidden" }}
-                            >
-                                {Row}
-                            </List>
-                        )}
-                    </InfiniteLoader>
-                )}
+                {isMobile
+                    ? // on mobile, render tickets directly without virtualized list
+                      tickets.map((ticket, index) => (
+                          <TicketCard
+                              key={ticket.ticketId}
+                              ticket={ticket}
+                              setItemSize={() => {}} // no need to set item size on mobile
+                              updateTicketStatus={updateTicketStatus}
+                          />
+                      ))
+                    : // on desktop, use virtualized list for performance
+                      listHeight > 0 && (
+                          <InfiniteLoader
+                              isItemLoaded={isItemLoaded}
+                              itemCount={
+                                  hasMore ? tickets.length + 1 : tickets.length
+                              }
+                              loadMoreItems={loadMoreItemsCallback}
+                          >
+                              {({ onItemsRendered, ref }) => (
+                                  <List
+                                      height={listHeight}
+                                      itemCount={
+                                          hasMore
+                                              ? tickets.length + 1
+                                              : tickets.length
+                                      }
+                                      itemSize={getItemSize}
+                                      width="100%"
+                                      ref={(list) => {
+                                          listRef.current = list; // keep ref to list
+                                          ref(list); // pass to InfiniteLoader
+                                      }}
+                                      itemData={tickets}
+                                      onItemsRendered={onItemsRendered}
+                                      style={{ overflowX: "hidden" }}
+                                  >
+                                      {Row}
+                                  </List>
+                              )}
+                          </InfiniteLoader>
+                      )}
             </Box>
 
             <Modal
