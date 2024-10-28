@@ -8,6 +8,8 @@ import {
     Snackbar,
     Alert,
     Box,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { canTransition, allowedTransitions } from "../utils/fsa";
@@ -18,6 +20,8 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
     const [isOverflowing, setIsOverflowing] = useState(false);
     const cardRef = useRef();
     const descRef = useRef();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const handleToggleExpand = () => {
         if (isOverflowing) {
@@ -69,10 +73,15 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                         marginBottom: 2,
                         backgroundColor: "#f9f9f9",
                         border: "1px solid #ddd",
+                        padding: isMobile ? 1 : 2,
                     }}
                 >
                     <CardContent>
-                        <Box display="flex" justifyContent="space-between">
+                        <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            flexDirection={isMobile ? "column" : "row"}
+                        >
                             <Typography
                                 variant="caption"
                                 color="textSecondary"
@@ -90,7 +99,10 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                 ID: {ticket.ticketId}
                             </Typography>
                         </Box>
-                        <Typography variant="h6" component="div">
+                        <Typography
+                            variant={isMobile ? "subtitle1" : "h6"}
+                            component="div"
+                        >
                             {ticket.title}
                         </Typography>
                         <Typography
@@ -133,7 +145,7 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                         </Typography>
                         {nextStatuses.length > 0 && (
                             <ButtonGroup
-                                size="small"
+                                size={isMobile ? "small" : "medium"}
                                 variant="outlined"
                                 sx={{ marginTop: 1 }}
                             >

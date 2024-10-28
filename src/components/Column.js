@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import { VariableSizeList as List } from "react-window";
 import TicketCard from "./TicketCard";
 
@@ -8,9 +8,11 @@ function Column({ status, tickets, updateTicketStatus }) {
     const containerRef = useRef();
     const itemSizeMap = useRef({});
     const [listHeight, setListHeight] = useState(0);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const getItemSize = useCallback((index) => {
-        return itemSizeMap.current[index] || 220; // Adjust default height if needed
+        return itemSizeMap.current[index] || 220;
     }, []);
 
     const setItemSize = useCallback((index, size) => {
@@ -39,7 +41,7 @@ function Column({ status, tickets, updateTicketStatus }) {
                 const headerHeight =
                     containerRef.current.querySelector("h6").clientHeight;
                 const height =
-                    containerRef.current.clientHeight - headerHeight - 16; // Adjust for margins
+                    containerRef.current.clientHeight - headerHeight - 16;
                 setListHeight(height);
             }
         }
@@ -54,7 +56,8 @@ function Column({ status, tickets, updateTicketStatus }) {
             flex="1 1 0"
             display="flex"
             flexDirection="column"
-            marginRight={2}
+            marginRight={isMobile ? 0 : 2}
+            marginBottom={isMobile ? 2 : 0}
             minWidth={0}
             overflow="hidden"
         >

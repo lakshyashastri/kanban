@@ -8,6 +8,7 @@ import { useSnackbar } from "notistack";
 function AppContent() {
     const [ticketData, setTicketData] = useState([]);
     const [liveMode, setLiveMode] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
     const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
@@ -32,7 +33,6 @@ function AppContent() {
         setLiveMode((prev) => !prev);
     };
 
-    // Calculate ticket counts by status
     const ticketCounts = ticketData.reduce((acc, ticket) => {
         acc[ticket.status] = (acc[ticket.status] || 0) + 1;
         return acc;
@@ -63,10 +63,13 @@ function AppContent() {
                 liveMode={liveMode}
                 handleLiveModeToggle={handleLiveModeToggle}
                 ticketCounts={ticketCounts}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
             />
             <KanbanBoard
                 tickets={ticketData}
                 updateTicketStatus={updateTicketStatus}
+                searchTerm={searchTerm}
             />
         </>
     );
