@@ -71,15 +71,21 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                     variant="outlined"
                     sx={{
                         marginBottom: 2,
-                        backgroundColor: "#f9f9f9",
-                        border: "1px solid #ddd",
+                        backgroundColor: "#ffffff",
+                        borderRadius: "8px",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                        border: "1px solid #eeeeee",
+                        "&:hover": {
+                            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                        },
                         padding: isMobile ? 1 : 2,
                     }}
                 >
-                    <CardContent>
+                    <CardContent sx={{ padding: "0 !important" }}>
                         <Box
                             display="flex"
                             justifyContent="space-between"
+                            alignItems="flex-start"
                             flexDirection={isMobile ? "column" : "row"}
                         >
                             <Typography
@@ -87,6 +93,7 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                 color="textSecondary"
                                 align="left"
                                 gutterBottom
+                                sx={{ fontSize: "0.75rem", color: "#999999" }}
                             >
                                 Status: {ticket.status}
                             </Typography>
@@ -95,6 +102,11 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                 color="textSecondary"
                                 align="right"
                                 gutterBottom
+                                sx={{
+                                    fontSize: "0.75rem",
+                                    color: "#999999",
+                                    marginLeft: "auto",
+                                }}
                             >
                                 ID: {ticket.ticketId}
                             </Typography>
@@ -102,6 +114,11 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                         <Typography
                             variant={isMobile ? "subtitle1" : "h6"}
                             component="div"
+                            sx={{
+                                fontSize: isMobile ? "1rem" : "1.25rem",
+                                fontWeight: 700,
+                                color: "#333333",
+                            }}
                         >
                             {ticket.title}
                         </Typography>
@@ -115,6 +132,7 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                 WebkitLineClamp: expanded ? "none" : 2,
                                 WebkitBoxOrient: "vertical",
                                 cursor: isOverflowing ? "pointer" : "default",
+                                color: "#666666",
                             }}
                             ref={descRef}
                             onClick={handleToggleExpand}
@@ -124,7 +142,7 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                 <Box
                                     component="span"
                                     sx={{
-                                        color: "primary.main",
+                                        color: theme.palette.primary.main,
                                         marginLeft: 0.5,
                                     }}
                                 >
@@ -135,7 +153,7 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                 <Box
                                     component="span"
                                     sx={{
-                                        color: "primary.main",
+                                        color: theme.palette.primary.main,
                                         marginLeft: 0.5,
                                     }}
                                 >
@@ -155,6 +173,17 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                         onClick={() =>
                                             handleStatusChange(status)
                                         }
+                                        sx={{
+                                            textTransform: "none",
+                                            borderColor: "#cccccc",
+                                            color: "#333333",
+                                            "&:hover": {
+                                                borderColor:
+                                                    theme.palette.primary.main,
+                                                color: theme.palette.primary
+                                                    .main,
+                                            },
+                                        }}
                                     >
                                         Move to {status}
                                     </Button>

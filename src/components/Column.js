@@ -60,11 +60,46 @@ function Column({ status, tickets, updateTicketStatus }) {
             marginBottom={isMobile ? 2 : 0}
             minWidth={0}
             overflow="hidden"
+            sx={{
+                backgroundColor: "#f5f5f5",
+                borderRight: "1px solid #e0e0e0",
+                "&:last-child": {
+                    borderRight: "none",
+                },
+                "&:hover": {
+                    boxShadow: "inset 0 0 10px rgba(0,0,0,0.1)",
+                },
+            }}
         >
-            <Typography variant="h6" align="center" gutterBottom>
+            <Typography
+                variant="h6"
+                align="center"
+                gutterBottom
+                sx={{
+                    fontWeight: 700,
+                    color: theme.palette.text.primary,
+                    borderBottom: "1px solid #e0e0e0",
+                    padding: "8px 0",
+                }}
+            >
                 {status} ({tickets.length})
             </Typography>
-            <Box flexGrow={1} overflow="hidden">
+            <Box
+                flexGrow={1}
+                overflow="auto"
+                sx={{
+                    "&::-webkit-scrollbar": {
+                        width: "8px",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                        backgroundColor: "#cccccc",
+                        borderRadius: "4px",
+                    },
+                    "&::-webkit-scrollbar-track": {
+                        backgroundColor: "#f0f0f0",
+                    },
+                }}
+            >
                 {listHeight > 0 && (
                     <List
                         height={listHeight}
