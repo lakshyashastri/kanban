@@ -20,7 +20,9 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
     const descRef = useRef();
 
     const handleToggleExpand = () => {
-        setExpanded((prev) => !prev);
+        if (isOverflowing) {
+            setExpanded((prev) => !prev);
+        }
     };
 
     useEffect(() => {
@@ -100,16 +102,35 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                 display: "-webkit-box",
                                 WebkitLineClamp: expanded ? "none" : 2,
                                 WebkitBoxOrient: "vertical",
+                                cursor: isOverflowing ? "pointer" : "default",
                             }}
                             ref={descRef}
+                            onClick={handleToggleExpand}
                         >
                             {ticket.description}
+                            {isOverflowing && !expanded && (
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        color: "primary.main",
+                                        marginLeft: 0.5,
+                                    }}
+                                >
+                                    {"... Show More"}
+                                </Box>
+                            )}
+                            {isOverflowing && expanded && (
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        color: "primary.main",
+                                        marginLeft: 0.5,
+                                    }}
+                                >
+                                    {" Show Less"}
+                                </Box>
+                            )}
                         </Typography>
-                        {isOverflowing && (
-                            <Button size="small" onClick={handleToggleExpand}>
-                                {expanded ? "Show Less" : "Show More"}
-                            </Button>
-                        )}
                         {nextStatuses.length > 0 && (
                             <ButtonGroup
                                 size="small"
