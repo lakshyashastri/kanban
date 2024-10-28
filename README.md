@@ -1,8 +1,8 @@
-# Documentation for the Kanban Dashboard App
+# Kanban Dashboard App: A Modern & Minimalist Design
 
 ## Overview
 
-This Kanban Dashboard is a React application designed to help users manage tasks (tickets) across different statuses in a Kanban-style board. **The design is focused on being clean, modern, and minimalist.** The app includes features such as:
+This Kanban Dashboard is a React application designed to help users manage tasks (tickets) across different statuses in a Kanban-style board. The app includes features such as:
 
 -   Viewing and organizing tickets in columns based on their status.
 -   Moving tickets between statuses according to defined transitions.
