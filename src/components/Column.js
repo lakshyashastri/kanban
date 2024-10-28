@@ -177,23 +177,7 @@ function Column({
                     <AddIcon />
                 </IconButton>
             </Box>
-            <Box
-                flexGrow={1}
-                overflow="auto"
-                sx={{
-                    overflowX: "hidden",
-                    "&::-webkit-scrollbar": {
-                        width: "8px",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                        backgroundColor: "#cccccc",
-                        borderRadius: "4px",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                        backgroundColor: "#f0f0f0",
-                    },
-                }}
-            >
+            <Box flexGrow={1}>
                 {listHeight > 0 && (
                     <InfiniteLoader
                         isItemLoaded={isItemLoaded}
@@ -205,7 +189,11 @@ function Column({
                         {({ onItemsRendered, ref }) => (
                             <List
                                 height={listHeight}
-                                itemCount={tickets.length}
+                                itemCount={
+                                    hasMore
+                                        ? tickets.length + 1
+                                        : tickets.length
+                                }
                                 itemSize={getItemSize}
                                 width="100%"
                                 ref={(list) => {
