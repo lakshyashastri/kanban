@@ -171,7 +171,7 @@ function Column({
                         color: theme.palette.text.primary,
                     }}
                 >
-                    {status} ({tickets.length} loaded)
+                    {status} ({tickets.length}/{totalCount} loaded)
                 </Typography>
                 <IconButton
                     aria-label="add ticket"
