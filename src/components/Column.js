@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Box, Typography } from "@mui/material";
 import { VariableSizeList as List } from "react-window";
 import TicketCard from "./TicketCard";
@@ -9,26 +9,29 @@ function Column({ status, tickets, updateTicketStatus }) {
     const itemSizeMap = useRef({});
     const [listHeight, setListHeight] = useState(0);
 
-    const getItemSize = (index) => {
-        return itemSizeMap.current[index] || 180;
-    };
+    const getItemSize = useCallback((index) => {
+        return itemSizeMap.current[index] || 220; // Adjust default height if needed
+    }, []);
 
-    const setItemSize = (index, size) => {
+    const setItemSize = useCallback((index, size) => {
         itemSizeMap.current[index] = size;
         if (listRef.current) {
             listRef.current.resetAfterIndex(index);
         }
-    };
+    }, []);
 
-    const Row = ({ index, style }) => (
-        <div style={{ ...style, padding: "8px", boxSizing: "border-box" }}>
-            <TicketCard
-                ticket={tickets[index]}
-                setItemSize={(size) => setItemSize(index, size)}
-                updateTicketStatus={updateTicketStatus}
-            />
-        </div>
-    );
+    const Row = React.memo(({ index, style, data }) => {
+        const ticket = data[index];
+        return (
+            <div style={{ ...style, padding: "8px", boxSizing: "border-box" }}>
+                <TicketCard
+                    ticket={ticket}
+                    setItemSize={(size) => setItemSize(index, size)}
+                    updateTicketStatus={updateTicketStatus}
+                />
+            </div>
+        );
+    });
 
     useEffect(() => {
         function updateHeight() {
@@ -36,7 +39,7 @@ function Column({ status, tickets, updateTicketStatus }) {
                 const headerHeight =
                     containerRef.current.querySelector("h6").clientHeight;
                 const height =
-                    containerRef.current.clientHeight - headerHeight - 16;
+                    containerRef.current.clientHeight - headerHeight - 16; // Adjust for margins
                 setListHeight(height);
             }
         }
@@ -66,6 +69,7 @@ function Column({ status, tickets, updateTicketStatus }) {
                         itemSize={getItemSize}
                         width="100%"
                         ref={listRef}
+                        itemData={tickets}
                     >
                         {Row}
                     </List>
@@ -75,4 +79,4 @@ function Column({ status, tickets, updateTicketStatus }) {
     );
 }
 
-export default Column;
+export default React.memo(Column);

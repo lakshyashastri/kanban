@@ -7,6 +7,7 @@ import {
     ButtonGroup,
     Snackbar,
     Alert,
+    Box,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { canTransition, allowedTransitions } from "../utils/fsa";
@@ -14,7 +15,9 @@ import { canTransition, allowedTransitions } from "../utils/fsa";
 function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
     const [expanded, setExpanded] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [isOverflowing, setIsOverflowing] = useState(false);
     const cardRef = useRef();
+    const descRef = useRef();
 
     const handleToggleExpand = () => {
         setExpanded((prev) => !prev);
@@ -26,11 +29,18 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
         }
     }, [expanded, setItemSize]);
 
+    useEffect(() => {
+        if (descRef.current) {
+            const { scrollHeight, clientHeight } = descRef.current;
+            setIsOverflowing(scrollHeight > clientHeight);
+        }
+    }, [ticket.description]);
+
     const nextStatuses = allowedTransitions[ticket.status] || [];
 
     const handleStatusChange = (newStatus) => {
         if (canTransition(ticket.status, newStatus)) {
-            updateTicketStatus(ticket.ticketId, newStatus);
+            updateTicketStatus(ticket.ticketId, newStatus, ticket.status);
         } else {
             setErrorMessage(
                 `Cannot move from ${ticket.status} to ${newStatus}`
@@ -51,16 +61,33 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ scale: 1.02 }}
             >
-                <Card variant="outlined" sx={{ marginBottom: 2 }}>
+                <Card
+                    variant="outlined"
+                    sx={{
+                        marginBottom: 2,
+                        backgroundColor: "#f9f9f9",
+                        border: "1px solid #ddd",
+                    }}
+                >
                     <CardContent>
-                        <Typography
-                            variant="caption"
-                            color="textSecondary"
-                            align="right"
-                            gutterBottom
-                        >
-                            ID: {ticket.ticketId}
-                        </Typography>
+                        <Box display="flex" justifyContent="space-between">
+                            <Typography
+                                variant="caption"
+                                color="textSecondary"
+                                align="left"
+                                gutterBottom
+                            >
+                                Status: {ticket.status}
+                            </Typography>
+                            <Typography
+                                variant="caption"
+                                color="textSecondary"
+                                align="right"
+                                gutterBottom
+                            >
+                                ID: {ticket.ticketId}
+                            </Typography>
+                        </Box>
                         <Typography variant="h6" component="div">
                             {ticket.title}
                         </Typography>
@@ -74,16 +101,19 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                 WebkitLineClamp: expanded ? "none" : 2,
                                 WebkitBoxOrient: "vertical",
                             }}
+                            ref={descRef}
                         >
                             {ticket.description}
                         </Typography>
-                        <Button size="small" onClick={handleToggleExpand}>
-                            {expanded ? "Show Less" : "Show More"}
-                        </Button>
+                        {isOverflowing && (
+                            <Button size="small" onClick={handleToggleExpand}>
+                                {expanded ? "Show Less" : "Show More"}
+                            </Button>
+                        )}
                         {nextStatuses.length > 0 && (
                             <ButtonGroup
                                 size="small"
-                                variant="text"
+                                variant="outlined"
                                 sx={{ marginTop: 1 }}
                             >
                                 {nextStatuses.map((status) => (
@@ -116,4 +146,4 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
     );
 }
 
-export default TicketCard;
+export default React.memo(TicketCard);

@@ -23,15 +23,18 @@ function useFakeTicketTransition(tickets, updateTicketStatus, isLiveMode) {
                             )
                         ];
 
-                    updateTicketStatus(randomTicket.ticketId, newStatus);
+                    updateTicketStatus(
+                        randomTicket.ticketId,
+                        newStatus,
+                        randomTicket.status
+                    );
                 }
-            }, 1000); // interval time
+            }, 1000);
 
             return () => {
                 clearInterval(intervalRef.current);
             };
         } else {
-            // clear existing intervals if live mode is off
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
             }

@@ -20,7 +20,7 @@ function Header({ liveMode, handleLiveModeToggle, ticketCounts }) {
                         <Switch
                             checked={liveMode}
                             onChange={handleLiveModeToggle}
-                            color="secondary"
+                            color="error"
                         />
                     }
                     label="Live Mode"
