@@ -4,16 +4,16 @@ import clsx from "clsx";
 import "./FlashingCount.css";
 
 const FlashingCount = ({ count }) => {
-    const [flashColor, setFlashColor] = useState(null);
-    const prevCountRef = useRef(count);
-    const timeoutRef = useRef(null);
+    const [flashColor, setFlashColor] = useState(null); // current flash color
+    const prevCountRef = useRef(count); // previous count
+    const timeoutRef = useRef(null); // ref for timeout
 
     useEffect(() => {
         if (prevCountRef.current !== count) {
             if (count > prevCountRef.current) {
-                setFlashColor("flash-green");
+                setFlashColor("flash-green"); // increase flash
             } else if (count < prevCountRef.current) {
-                setFlashColor("flash-red");
+                setFlashColor("flash-red"); // decrease flash
             }
             prevCountRef.current = count;
 
@@ -23,7 +23,7 @@ const FlashingCount = ({ count }) => {
             }
 
             timeoutRef.current = setTimeout(() => {
-                setFlashColor(null);
+                setFlashColor(null); // reset flash after animation
             }, 1000);
         }
     }, [count]);

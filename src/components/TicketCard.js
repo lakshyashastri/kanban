@@ -15,38 +15,38 @@ import { motion } from "framer-motion";
 import { canTransition, allowedTransitions } from "../utils/fsa";
 
 function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
-    const [expanded, setExpanded] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [isOverflowing, setIsOverflowing] = useState(false);
-    const cardRef = useRef();
-    const descRef = useRef();
+    const [expanded, setExpanded] = useState(false); // controls description expansion
+    const [errorMessage, setErrorMessage] = useState(""); // error message for invalid transitions
+    const [isOverflowing, setIsOverflowing] = useState(false); // checks if description overflows (for click to show more)
+    const cardRef = useRef(); // ref to the card for size calculation
+    const descRef = useRef(); // ref to the description text
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const handleToggleExpand = () => {
         if (isOverflowing) {
-            setExpanded((prev) => !prev);
+            setExpanded((prev) => !prev); // toggle expanded state of ticket card (show more)
         }
     };
 
     useEffect(() => {
         if (cardRef.current) {
-            setItemSize(cardRef.current.offsetHeight + 8);
+            setItemSize(cardRef.current.offsetHeight + 8); // update item size
         }
     }, [expanded, setItemSize]);
 
     useEffect(() => {
         if (descRef.current) {
             const { scrollHeight, clientHeight } = descRef.current;
-            setIsOverflowing(scrollHeight > clientHeight);
+            setIsOverflowing(scrollHeight > clientHeight); // check if text is overflowing
         }
     }, [ticket.description]);
 
-    const nextStatuses = allowedTransitions[ticket.status] || [];
+    const nextStatuses = allowedTransitions[ticket.status] || []; // possible next statuses
 
     const handleStatusChange = (newStatus) => {
         if (canTransition(ticket.status, newStatus)) {
-            updateTicketStatus(ticket.ticketId, newStatus, ticket.status);
+            updateTicketStatus(ticket.ticketId, newStatus, ticket.status); // update status if allowed
         } else {
             setErrorMessage(
                 `Cannot move from ${ticket.status} to ${newStatus}`

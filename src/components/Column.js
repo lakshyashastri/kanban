@@ -26,17 +26,17 @@ function Column({
     isSearching,
     addTicket,
 }) {
-    const listRef = useRef();
-    const containerRef = useRef();
-    const itemSizeMap = useRef({});
-    const [listHeight, setListHeight] = useState(0);
+    const listRef = useRef(); // ref for the list component
+    const containerRef = useRef(); // ref for the column container
+    const itemSizeMap = useRef({}); // keeps track of each item's size
+    const [listHeight, setListHeight] = useState(0); // dynamic height for the list
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const [openModal, setOpenModal] = useState(false);
+    const [openModal, setOpenModal] = useState(false); // controls add ticket modal
     const [newTitle, setNewTitle] = useState("");
     const [newDescription, setNewDescription] = useState("");
-    const { enqueueSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar(); // for showing notifications
 
     const handleOpenModal = () => {
         setOpenModal(true);
@@ -49,6 +49,7 @@ function Column({
     };
 
     const handleAddTicket = () => {
+        // check if title and description are provided
         if (!newTitle.trim() || !newDescription.trim()) {
             enqueueSnackbar("Title and Description are required.", {
                 variant: "error",
@@ -56,24 +57,26 @@ function Column({
             return;
         }
 
+        // add the new ticket and close modal
         addTicket(status, newTitle.trim(), newDescription.trim());
         handleCloseModal();
     };
 
     const getItemSize = useCallback((index) => {
-        return itemSizeMap.current[index] || 220;
+        return itemSizeMap.current[index] || 220; // get size or default
     }, []);
 
     const setItemSize = useCallback((index, size) => {
-        itemSizeMap.current[index] = size;
+        itemSizeMap.current[index] = size; // set the size for the item
         if (listRef.current) {
-            listRef.current.resetAfterIndex(index);
+            listRef.current.resetAfterIndex(index); // reset list layout
         }
     }, []);
 
     const Row = React.memo(({ index, style, data }) => {
         const ticket = data[index];
         if (!ticket) {
+            // show loading if ticket not loaded yet for whatever reason
             return (
                 <div style={style}>
                     <div style={{ padding: "16px", textAlign: "center" }}>
@@ -96,19 +99,20 @@ function Column({
     });
 
     const isItemLoaded = useCallback(
-        (index) => !hasMore || index < tickets.length,
+        (index) => !hasMore || index < tickets.length, // check if item is loaded
         [hasMore, tickets.length]
     );
 
     const loadMoreItemsCallback = useCallback(() => {
         if (hasMore) {
-            loadMoreTickets(status);
+            loadMoreTickets(status); // load more tickets if available
         }
     }, [hasMore, loadMoreTickets, status]);
 
     useEffect(() => {
         function updateHeight() {
             if (containerRef.current) {
+                // calculate the available height for the list
                 const headerHeight =
                     containerRef.current.querySelector("h6")?.clientHeight || 0;
                 const height =
@@ -116,8 +120,8 @@ function Column({
                 setListHeight(height);
             }
         }
-        updateHeight();
-        window.addEventListener("resize", updateHeight);
+        updateHeight(); // set initial height
+        window.addEventListener("resize", updateHeight); // update on resize
         return () => window.removeEventListener("resize", updateHeight);
     }, []);
 
@@ -200,8 +204,8 @@ function Column({
                                 itemSize={getItemSize}
                                 width="100%"
                                 ref={(list) => {
-                                    listRef.current = list;
-                                    ref(list);
+                                    listRef.current = list; // keep ref to list
+                                    ref(list); // pass to InfiniteLoader
                                 }}
                                 itemData={tickets}
                                 onItemsRendered={onItemsRendered}

@@ -6,17 +6,17 @@ import useFakeTicketTransition from "./hooks/useFakeTicketTransition";
 import { useSnackbar } from "notistack";
 
 function AppContent() {
-    const [ticketCounts, setTicketCounts] = useState({});
+    const [ticketCounts, setTicketCounts] = useState({}); // count of tickets per status
     const [ticketsByStatus, setTicketsByStatus] = useState({
         allTickets: {},
         loadedTickets: {},
-    });
-    const [liveMode, setLiveMode] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
-    const { enqueueSnackbar } = useSnackbar();
+    }); // all and loaded tickets
+    const [liveMode, setLiveMode] = useState(false); // live mode toggle
+    const [searchTerm, setSearchTerm] = useState(""); // search input
+    const { enqueueSnackbar } = useSnackbar(); // for notifications
 
     const statuses = ["To Do", "In Progress", "Blocked", "Done"];
-    const TICKETS_PER_LOAD = 20;
+    const TICKETS_PER_LOAD = 20; // how many tickets to load each time
 
     useEffect(() => {
         const counts = {};
@@ -40,14 +40,14 @@ function AppContent() {
                 });
             },
             complete: () => {
-                setTicketCounts(counts);
+                setTicketCounts(counts); // set counts after parsing
 
                 const initialTickets = {};
                 statuses.forEach((status) => {
                     initialTickets[status] = ticketsTemp[status].slice(
                         0,
                         TICKETS_PER_LOAD
-                    );
+                    ); // load initial tickets
                 });
                 setTicketsByStatus({
                     allTickets: ticketsTemp,
@@ -66,7 +66,7 @@ function AppContent() {
             const additionalTickets = prevState.allTickets[status]?.slice(
                 currentLoaded,
                 currentLoaded + TICKETS_PER_LOAD
-            );
+            ); // get more tickets
 
             return {
                 allTickets: prevState.allTickets,
@@ -96,7 +96,7 @@ function AppContent() {
                         1
                     );
                     movedTicket.status = newStatus;
-                    updatedAllTickets[newStatus].unshift(movedTicket);
+                    updatedAllTickets[newStatus].unshift(movedTicket); // move to new status
                 }
 
                 const ticketIndexLoaded = updatedLoadedTickets[
@@ -107,7 +107,7 @@ function AppContent() {
                         prevStatus
                     ].splice(ticketIndexLoaded, 1);
                     movedTicket.status = newStatus;
-                    updatedLoadedTickets[newStatus].unshift(movedTicket);
+                    updatedLoadedTickets[newStatus].unshift(movedTicket); // move in loaded tickets
                 }
 
                 return {
@@ -120,14 +120,14 @@ function AppContent() {
                 ...prevCounts,
                 [prevStatus]: prevCounts[prevStatus] - 1,
                 [newStatus]: prevCounts[newStatus] + 1,
-            }));
+            })); // update counts
 
             enqueueSnackbar(
-                `Ticket ${ticketId} moved from ${prevStatus} to ${newStatus}`,
+                `ticket ${ticketId} moved from ${prevStatus} to ${newStatus}`,
                 {
                     variant: "success",
                 }
-            );
+            ); // toast notif
         },
         [enqueueSnackbar]
     );
@@ -155,8 +155,8 @@ function AppContent() {
                 const updatedAllTickets = { ...prevState.allTickets };
                 const updatedLoadedTickets = { ...prevState.loadedTickets };
 
-                updatedAllTickets[status].unshift(newTicket);
-                updatedLoadedTickets[status].unshift(newTicket);
+                updatedAllTickets[status].unshift(newTicket); // add to all tickets
+                updatedLoadedTickets[status].unshift(newTicket); // add to loaded tickets
 
                 return {
                     allTickets: updatedAllTickets,
@@ -167,20 +167,20 @@ function AppContent() {
             setTicketCounts((prevCounts) => ({
                 ...prevCounts,
                 [status]: prevCounts[status] + 1,
-            }));
+            })); // update counts
 
             enqueueSnackbar(
-                `Ticket ${status}: ${newTicketId} added successfully!`,
+                `ticket ${status}: ${newTicketId} added successfully!`,
                 {
                     variant: "success",
                 }
-            );
+            ); // notify user
         },
         [enqueueSnackbar, ticketsByStatus.allTickets]
     );
 
     const handleLiveModeToggle = () => {
-        setLiveMode((prev) => !prev);
+        setLiveMode((prev) => !prev); // toggle live mode
     };
 
     const displayedTicketsByStatus = useMemo(() => {
@@ -197,11 +197,11 @@ function AppContent() {
                             .toLowerCase()
                             .includes(lowercasedTerm) ||
                         ticket.ticketId.toString().includes(lowercasedTerm)
-                );
+                ); // filter tickets based on search input
             });
         } else {
             statuses.forEach((status) => {
-                result[status] = loadedTickets[status] || [];
+                result[status] = loadedTickets[status] || []; // show loaded tickets
             });
         }
         return result;
@@ -211,7 +211,7 @@ function AppContent() {
         Object.values(ticketsByStatus.loadedTickets || {}).flat(),
         updateTicketStatus,
         liveMode
-    );
+    ); // handle live updates
 
     return (
         <>
