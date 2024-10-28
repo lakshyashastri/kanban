@@ -9,6 +9,7 @@ import {
     TextField,
     useTheme,
 } from "@mui/material";
+import FlashingCount from "./FlashingCount";
 
 function Header({
     liveMode,
@@ -109,6 +110,8 @@ function Header({
                                 variant="body2"
                                 key={status}
                                 sx={{
+                                    display: "flex",
+                                    alignItems: "center",
                                     marginRight: 2,
                                     fontWeight: 700,
                                     color: theme.palette.text.primary,
@@ -118,7 +121,7 @@ function Header({
                                     }),
                                 }}
                             >
-                                {status}: {count}
+                                {status}: <FlashingCount count={count} />
                             </Typography>
                         )
                     )}

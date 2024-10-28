@@ -1,8 +1,19 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import {
+    Box,
+    Typography,
+    useTheme,
+    useMediaQuery,
+    IconButton,
+    Modal,
+    TextField,
+    Button,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { VariableSizeList as List } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import TicketCard from "./TicketCard";
+import { useSnackbar } from "notistack";
 
 function Column({
     status,
@@ -12,6 +23,7 @@ function Column({
     hasMore,
     totalCount,
     isSearching,
+    addTicket,
 }) {
     const listRef = useRef();
     const containerRef = useRef();
@@ -19,6 +31,33 @@ function Column({
     const [listHeight, setListHeight] = useState(0);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+    const [openModal, setOpenModal] = useState(false);
+    const [newTitle, setNewTitle] = useState("");
+    const [newDescription, setNewDescription] = useState("");
+    const { enqueueSnackbar } = useSnackbar();
+
+    const handleOpenModal = () => {
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setNewTitle("");
+        setNewDescription("");
+    };
+
+    const handleAddTicket = () => {
+        if (!newTitle.trim() || !newDescription.trim()) {
+            enqueueSnackbar("Title and Description are required.", {
+                variant: "error",
+            });
+            return;
+        }
+
+        addTicket(status, newTitle.trim(), newDescription.trim());
+        handleCloseModal();
+    };
 
     const getItemSize = useCallback((index) => {
         return itemSizeMap.current[index] || 220;
@@ -58,7 +97,7 @@ function Column({
         [hasMore, tickets.length]
     );
 
-    const loadMoreItems = useCallback(() => {
+    const loadMoreItemsCallback = useCallback(() => {
         if (hasMore) {
             loadMoreTickets(status);
         }
@@ -68,7 +107,7 @@ function Column({
         function updateHeight() {
             if (containerRef.current) {
                 const headerHeight =
-                    containerRef.current.querySelector("h6").clientHeight;
+                    containerRef.current.querySelector("h6")?.clientHeight || 0;
                 const height =
                     containerRef.current.clientHeight - headerHeight - 16;
                 setListHeight(height);
@@ -100,19 +139,44 @@ function Column({
                 },
             }}
         >
-            <Typography
-                variant="h6"
-                align="center"
-                gutterBottom
+            <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
                 sx={{
                     fontWeight: 700,
                     color: theme.palette.text.primary,
                     borderBottom: "1px solid #e0e0e0",
                     padding: "8px 0",
+                    position: "relative",
                 }}
             >
-                {status} ({tickets.length} loaded)
-            </Typography>
+                <Typography
+                    variant="h6"
+                    align="center"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 700,
+                        color: theme.palette.text.primary,
+                    }}
+                >
+                    {status} ({tickets.length} loaded)
+                </Typography>
+                <IconButton
+                    aria-label="add ticket"
+                    onClick={handleOpenModal}
+                    size="small"
+                    sx={{
+                        position: "absolute",
+                        right: 8,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        color: theme.palette.primary.main,
+                    }}
+                >
+                    <AddIcon />
+                </IconButton>
+            </Box>
             <Box
                 flexGrow={1}
                 overflow="auto"
@@ -136,7 +200,7 @@ function Column({
                         itemCount={
                             hasMore ? tickets.length + 1 : tickets.length
                         }
-                        loadMoreItems={loadMoreItems}
+                        loadMoreItems={loadMoreItemsCallback}
                     >
                         {({ onItemsRendered, ref }) => (
                             <List
@@ -158,6 +222,76 @@ function Column({
                     </InfiniteLoader>
                 )}
             </Box>
+
+            <Modal
+                open={openModal}
+                onClose={handleCloseModal}
+                aria-labelledby="add-ticket-modal-title"
+                aria-describedby="add-ticket-modal-description"
+            >
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 400,
+                        bgcolor: "background.paper",
+                        border: "2px solid #000",
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: "8px",
+                    }}
+                >
+                    <Typography
+                        id="add-ticket-modal-title"
+                        variant="h6"
+                        component="h2"
+                        gutterBottom
+                    >
+                        Add New Ticket
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        label="Title"
+                        variant="outlined"
+                        value={newTitle}
+                        onChange={(e) => setNewTitle(e.target.value)}
+                        margin="normal"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Description"
+                        variant="outlined"
+                        value={newDescription}
+                        onChange={(e) => setNewDescription(e.target.value)}
+                        margin="normal"
+                        multiline
+                        rows={4}
+                    />
+                    <Box
+                        display="flex"
+                        justifyContent="flex-end"
+                        marginTop={2}
+                        gap={1}
+                    >
+                        <Button
+                            variant="contained"
+                            color="success"
+                            onClick={handleAddTicket}
+                        >
+                            Add
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={handleCloseModal}
+                        >
+                            Cancel
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
         </Box>
     );
 }

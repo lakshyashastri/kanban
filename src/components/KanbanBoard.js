@@ -12,6 +12,7 @@ function KanbanBoard({
     searchTerm,
     loadMoreTickets,
     totalTicketCounts,
+    addTicket,
 }) {
     const statuses = ["To Do", "In Progress", "Blocked", "Done"];
     const theme = useTheme();
@@ -43,8 +44,8 @@ function KanbanBoard({
                                 width="100%"
                             >
                                 <Box>
-                                    <strong>{status}</strong> ({tickets.length}/
-                                    {totalCount})
+                                    <strong>{status}</strong> ({tickets.length}{" "}
+                                    / {totalCount})
                                 </Box>
                             </Box>
                         </AccordionSummary>
@@ -57,6 +58,7 @@ function KanbanBoard({
                                 hasMore={hasMore}
                                 totalCount={totalCount}
                                 isSearching={Boolean(searchTerm)}
+                                addTicket={addTicket}
                             />
                         </AccordionDetails>
                     </Accordion>
@@ -70,6 +72,7 @@ function KanbanBoard({
                         hasMore={hasMore}
                         totalCount={totalCount}
                         isSearching={Boolean(searchTerm)}
+                        addTicket={addTicket}
                     />
                 );
             })}

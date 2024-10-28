@@ -69,7 +69,7 @@ function AppContent() {
             );
 
             return {
-                ...prevState,
+                allTickets: prevState.allTickets,
                 loadedTickets: {
                     ...prevState.loadedTickets,
                     [status]: [
@@ -132,6 +132,53 @@ function AppContent() {
         [enqueueSnackbar]
     );
 
+    const addTicket = useCallback(
+        (status, title, description) => {
+            // gen new ticket id
+            let newTicketId;
+            do {
+                newTicketId = Math.floor(10000 + Math.random() * 90000);
+            } while (
+                Object.values(ticketsByStatus.allTickets).some((tickets) =>
+                    tickets.some((ticket) => ticket.ticketId === newTicketId)
+                )
+            );
+
+            const newTicket = {
+                ticketId: `TICKET-${newTicketId}`,
+                title,
+                description,
+                status,
+            };
+
+            setTicketsByStatus((prevState) => {
+                const updatedAllTickets = { ...prevState.allTickets };
+                const updatedLoadedTickets = { ...prevState.loadedTickets };
+
+                updatedAllTickets[status].unshift(newTicket);
+                updatedLoadedTickets[status].unshift(newTicket);
+
+                return {
+                    allTickets: updatedAllTickets,
+                    loadedTickets: updatedLoadedTickets,
+                };
+            });
+
+            setTicketCounts((prevCounts) => ({
+                ...prevCounts,
+                [status]: prevCounts[status] + 1,
+            }));
+
+            enqueueSnackbar(
+                `Ticket ${status}: ${newTicketId} added successfully!`,
+                {
+                    variant: "success",
+                }
+            );
+        },
+        [enqueueSnackbar, ticketsByStatus.allTickets]
+    );
+
     const handleLiveModeToggle = () => {
         setLiveMode((prev) => !prev);
     };
@@ -181,6 +228,7 @@ function AppContent() {
                 searchTerm={searchTerm}
                 loadMoreTickets={loadMoreTickets}
                 totalTicketCounts={ticketCounts}
+                addTicket={addTicket}
             />
         </>
     );

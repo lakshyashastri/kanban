@@ -1,0 +1,35 @@
+.flashing-count {
+    transition: color 0.5s ease-in-out;
+}
+
+.flash-green {
+    animation: flashGreen 1s forwards;
+}
+
+.flash-red {
+    animation: flashRed 1s forwards;
+}
+
+@keyframes flashGreen {
+    0% {
+        color: green;
+    }
+    50% {
+        color: green;
+    }
+    100% {
+        color: inherit;
+    }
+}
+
+@keyframes flashRed {
+    0% {
+        color: red;
+    }
+    50% {
+        color: red;
+    }
+    100% {
+        color: inherit;
+    }
+}
