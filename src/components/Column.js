@@ -14,6 +14,7 @@ import { VariableSizeList as List } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import TicketCard from "./TicketCard";
 import { useSnackbar } from "notistack";
+import { AnimatePresence } from "framer-motion";
 
 function Column({
     status,
@@ -83,11 +84,13 @@ function Column({
         }
         return (
             <div style={style}>
-                <TicketCard
-                    ticket={ticket}
-                    setItemSize={(size) => setItemSize(index, size)}
-                    updateTicketStatus={updateTicketStatus}
-                />
+                <AnimatePresence>
+                    <TicketCard
+                        ticket={ticket}
+                        setItemSize={(size) => setItemSize(index, size)}
+                        updateTicketStatus={updateTicketStatus}
+                    />
+                </AnimatePresence>
             </div>
         );
     });

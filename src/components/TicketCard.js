@@ -61,11 +61,11 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
     return (
         <>
             <motion.div
-                layout
                 ref={cardRef}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.01 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
                 style={{ marginBottom: "8px" }}
             >
                 <Card
@@ -75,11 +75,13 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                         borderRadius: "8px",
                         boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                         border: "1px solid #eeeeee",
-                        "&:hover": {
-                            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                        },
                         padding: isMobile ? 1 : 2,
                         overflow: "hidden",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        "&:hover": {
+                            transform: "scale(1.01)",
+                            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                        },
                     }}
                 >
                     <CardContent sx={{ padding: "0 !important" }}>
