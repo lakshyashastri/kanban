@@ -1,9 +1,18 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import { VariableSizeList as List } from "react-window";
+import InfiniteLoader from "react-window-infinite-loader";
 import TicketCard from "./TicketCard";
 
-function Column({ status, tickets, updateTicketStatus }) {
+function Column({
+    status,
+    tickets,
+    updateTicketStatus,
+    loadMoreTickets,
+    hasMore,
+    totalCount,
+    isSearching,
+}) {
     const listRef = useRef();
     const containerRef = useRef();
     const itemSizeMap = useRef({});
@@ -24,8 +33,17 @@ function Column({ status, tickets, updateTicketStatus }) {
 
     const Row = React.memo(({ index, style, data }) => {
         const ticket = data[index];
+        if (!ticket) {
+            return (
+                <div style={style}>
+                    <div style={{ padding: "16px", textAlign: "center" }}>
+                        Loading...
+                    </div>
+                </div>
+            );
+        }
         return (
-            <div style={{ ...style, padding: "8px", boxSizing: "border-box" }}>
+            <div style={style}>
                 <TicketCard
                     ticket={ticket}
                     setItemSize={(size) => setItemSize(index, size)}
@@ -34,6 +52,17 @@ function Column({ status, tickets, updateTicketStatus }) {
             </div>
         );
     });
+
+    const isItemLoaded = useCallback(
+        (index) => !hasMore || index < tickets.length,
+        [hasMore, tickets.length]
+    );
+
+    const loadMoreItems = useCallback(() => {
+        if (hasMore) {
+            loadMoreTickets(status);
+        }
+    }, [hasMore, loadMoreTickets, status]);
 
     useEffect(() => {
         function updateHeight() {
@@ -82,12 +111,13 @@ function Column({ status, tickets, updateTicketStatus }) {
                     padding: "8px 0",
                 }}
             >
-                {status} ({tickets.length})
+                {status} ({tickets.length} loaded)
             </Typography>
             <Box
                 flexGrow={1}
                 overflow="auto"
                 sx={{
+                    overflowX: "hidden",
                     "&::-webkit-scrollbar": {
                         width: "8px",
                     },
@@ -101,16 +131,31 @@ function Column({ status, tickets, updateTicketStatus }) {
                 }}
             >
                 {listHeight > 0 && (
-                    <List
-                        height={listHeight}
-                        itemCount={tickets.length}
-                        itemSize={getItemSize}
-                        width="100%"
-                        ref={listRef}
-                        itemData={tickets}
+                    <InfiniteLoader
+                        isItemLoaded={isItemLoaded}
+                        itemCount={
+                            hasMore ? tickets.length + 1 : tickets.length
+                        }
+                        loadMoreItems={loadMoreItems}
                     >
-                        {Row}
-                    </List>
+                        {({ onItemsRendered, ref }) => (
+                            <List
+                                height={listHeight}
+                                itemCount={tickets.length}
+                                itemSize={getItemSize}
+                                width="100%"
+                                ref={(list) => {
+                                    listRef.current = list;
+                                    ref(list);
+                                }}
+                                itemData={tickets}
+                                onItemsRendered={onItemsRendered}
+                                style={{ overflowX: "hidden" }}
+                            >
+                                {Row}
+                            </List>
+                        )}
+                    </InfiniteLoader>
                 )}
             </Box>
         </Box>

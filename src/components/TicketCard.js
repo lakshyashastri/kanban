@@ -31,7 +31,7 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
 
     useEffect(() => {
         if (cardRef.current) {
-            setItemSize(cardRef.current.offsetHeight);
+            setItemSize(cardRef.current.offsetHeight + 8);
         }
     }, [expanded, setItemSize]);
 
@@ -65,12 +65,12 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                 ref={cardRef}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.01 }}
+                style={{ marginBottom: "8px" }}
             >
                 <Card
                     variant="outlined"
                     sx={{
-                        marginBottom: 2,
                         backgroundColor: "#ffffff",
                         borderRadius: "8px",
                         boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
@@ -79,6 +79,7 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                             boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                         },
                         padding: isMobile ? 1 : 2,
+                        overflow: "hidden",
                     }}
                 >
                     <CardContent sx={{ padding: "0 !important" }}>
@@ -105,7 +106,7 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                                 sx={{
                                     fontSize: "0.75rem",
                                     color: "#999999",
-                                    marginLeft: "auto",
+                                    marginLeft: isMobile ? 0 : "auto",
                                 }}
                             >
                                 ID: {ticket.ticketId}
@@ -126,9 +127,9 @@ function TicketCard({ ticket, setItemSize, updateTicketStatus }) {
                             variant="body2"
                             color="textSecondary"
                             sx={{
-                                overflow: expanded ? "visible" : "hidden",
+                                overflow: "hidden",
                                 textOverflow: "ellipsis",
-                                display: "-webkit-box",
+                                display: expanded ? "block" : "-webkit-box",
                                 WebkitLineClamp: expanded ? "none" : 2,
                                 WebkitBoxOrient: "vertical",
                                 cursor: isOverflowing ? "pointer" : "default",

@@ -6,7 +6,7 @@ import theme from "./theme";
 
 function App() {
     return (
-        <SnackbarProvider maxSnack={5}>
+        <SnackbarProvider maxSnack={4}>
             <ThemeProvider theme={theme}>
                 <CssBaseline />
                 <AppContent />
